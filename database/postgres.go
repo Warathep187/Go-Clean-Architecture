@@ -9,6 +9,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type postgresDatabase struct {
@@ -20,7 +21,7 @@ var (
 	dbInstance *postgresDatabase
 )
 
-func NewDatabase(conf *config.Config) Database {
+func NewPostgresDatabase(conf *config.Config) Database {
 	once.Do(func() {
 		dsn := fmt.Sprintf(
 			"host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s",
@@ -33,7 +34,9 @@ func NewDatabase(conf *config.Config) Database {
 			conf.Db.TimeZone,
 		)
 
-		db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+			Logger: logger.Discard,
+		})
 		if err != nil {
 			panic("failed to connect database")
 		}

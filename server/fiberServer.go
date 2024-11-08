@@ -19,7 +19,7 @@ type fiberServer struct {
 	conf *config.Config
 }
 
-func NewServer(conf *config.Config, db database.Database) Server {
+func NewFiberServer(conf *config.Config, db database.Database) Server {
 	app := fiber.New()
 
 	return &fiberServer{
@@ -36,29 +36,24 @@ func (s *fiberServer) Start() {
 		return c.SendString("OK")
 	})
 
-	s.initialBlogHttpHandler()
-	s.initialUserHttpHandler()
-
-	serverUrl := fmt.Sprintf(":%d", s.conf.Server.Port)
-	s.app.Listen(serverUrl)
-}
-
-func (s *fiberServer) initialBlogHttpHandler() {
 	blogRepo := repositories.NewBlogRepository(s.db)
 	userRepo := repositories.NewUserRepository(s.db)
-	blogUsecase := usecases.NewBlogUsecase(blogRepo, userRepo)
-	blogController := controllers.NewBlogController(blogUsecase)
 
+	blogUsecase := usecases.NewBlogUsecase(blogRepo, userRepo)
+	userUsecase := usecases.NewUserUsecase(userRepo)
+
+	blogController := controllers.NewBlogController(blogUsecase)
+	userController := controllers.NewUserController(userUsecase)
+
+	// blog routes
 	blogRouteGroup := s.app.Group("/blogs")
 	blogRouteGroup.Post("", middlewares.ValidateBlogData, blogController.CreateNewBlog)
 	blogRouteGroup.Get("", blogController.GetAllBlogs)
-}
 
-func (s *fiberServer) initialUserHttpHandler() {
-	userRepo := repositories.NewUserRepository(s.db)
-	userUsecase := usecases.NewUserUsecase(userRepo)
-	userController := controllers.NewUserController(userUsecase)
-
+	// user routes
 	userRouteGroup := s.app.Group("/users")
 	userRouteGroup.Post("/register", userController.RegisterUser)
+
+	serverUrl := fmt.Sprintf(":%d", s.conf.Server.Port)
+	s.app.Listen(serverUrl)
 }

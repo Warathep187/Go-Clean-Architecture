@@ -19,13 +19,13 @@ func (ctr *userController) RegisterUser(c *fiber.Ctx) error {
 	var userData *models.CreateUserDto
 	err := c.BodyParser(&userData)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
 
-	err = ctr.userUsecase.RegisterUser(userData)
+	httpStatus, err := ctr.userUsecase.RegisterUser(userData)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(httpStatus).JSON(fiber.Map{"message": err.Error()})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "User registered successfully"})
+	return c.Status(httpStatus).JSON(fiber.Map{"message": "User registered successfully"})
 }
