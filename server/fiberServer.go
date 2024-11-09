@@ -3,7 +3,6 @@ package server
 import (
 	"fmt"
 	"go-clean-arch/config"
-	"go-clean-arch/database"
 	"go-clean-arch/interfaces/controllers"
 	"go-clean-arch/interfaces/middlewares"
 	"go-clean-arch/repositories"
@@ -15,16 +14,14 @@ import (
 
 type fiberServer struct {
 	app  *fiber.App
-	db   database.Database
 	conf *config.Config
 }
 
-func NewFiberServer(conf *config.Config, db database.Database) Server {
+func NewFiberServer(conf *config.Config) Server {
 	app := fiber.New()
 
 	return &fiberServer{
 		app:  app,
-		db:   db,
 		conf: conf,
 	}
 }
@@ -36,8 +33,8 @@ func (s *fiberServer) Start() {
 		return c.SendString("OK")
 	})
 
-	blogRepo := repositories.NewBlogRepository(s.db)
-	userRepo := repositories.NewUserRepository(s.db)
+	blogRepo := repositories.NewBlogRepository()
+	userRepo := repositories.NewUserRepository()
 
 	blogUsecase := usecases.NewBlogUsecase(blogRepo, userRepo)
 	userUsecase := usecases.NewUserUsecase(userRepo)

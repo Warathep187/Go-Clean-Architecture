@@ -7,7 +7,7 @@ import (
 	"go-clean-arch/models"
 	"go-clean-arch/repositories"
 
-	"gorm.io/gorm"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type blogUsecase struct {
@@ -29,7 +29,7 @@ func (u *blogUsecase) CreateBlog(data *models.CreateBlogDTO) (int, error) {
 
 	_, err := u.userRepo.GetUserByID(userID)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return constants.StatusNotFound, errors.New("User not found. Cannot create blog.")
 		}
 		return constants.StatusInternalServerError, err

@@ -1,28 +1,28 @@
 package repositories
 
 import (
-	"go-clean-arch/database"
+	"context"
 	"go-clean-arch/entities"
+	"go-clean-arch/utils"
+
+	"github.com/kamva/mgm/v3"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-type blogRepository struct {
-	db database.Database
-}
+type blogRepository struct{}
 
-func NewBlogRepository(db database.Database) BlogRepository {
-	return &blogRepository{db: db}
+func NewBlogRepository() BlogRepository {
+	return &blogRepository{}
 }
 
 func (r *blogRepository) CreateBlog(in *entities.CreateBlogData) error {
-	data := &entities.Blog{
-		Title:   in.Title,
-		Content: in.Content,
+	document := bson.D{
+		{Key: "_id", Value: utils.GenerateRandomID()},
+		{Key: "title", Value: in.Title},
+		{Key: "content", Value: in.Content},
 	}
-
-	result := r.db.GetDb().Create(data)
-
-	if result.Error != nil {
-		return result.Error
+	if _, err := mgm.Coll(&entities.Blog{}).InsertOne(context.Background(), &document); err != nil {
+		return err
 	}
 
 	return nil
@@ -31,10 +31,12 @@ func (r *blogRepository) CreateBlog(in *entities.CreateBlogData) error {
 func (r *blogRepository) GetBlogs() ([]*entities.Blog, error) {
 	var blogs []*entities.Blog
 
-	result := r.db.GetDb().Find(&blogs)
-
-	if result.Error != nil {
-		return nil, result.Error
+	cursor, err := mgm.Coll(&entities.Blog{}).Find(context.Background(), bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	if err := cursor.All(context.Background(), &blogs); err != nil {
+		return nil, err
 	}
 
 	return blogs, nil

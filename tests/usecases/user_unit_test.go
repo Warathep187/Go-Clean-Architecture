@@ -11,7 +11,7 @@ import (
 
 	"github.com/magiconair/properties/assert"
 	"github.com/stretchr/testify/mock"
-	"gorm.io/gorm"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func TestRegisterUserFailedGetUserFailed(t *testing.T) {
@@ -55,7 +55,7 @@ func TestRegisterUserFailedUsernameAlreadyExists(t *testing.T) {
 
 func TestRegisterUserSuccess(t *testing.T) {
 	userRepositoryMock := new(mocks.UserRepository)
-	userRepositoryMock.On("GetUserByUsername", mock.Anything).Return(nil, gorm.ErrRecordNotFound)
+	userRepositoryMock.On("GetUserByUsername", mock.Anything).Return(nil, mongo.ErrNoDocuments)
 	userRepositoryMock.On("CreateUser", mock.Anything).Return(nil)
 
 	userUsecase := usecases.NewUserUsecase(

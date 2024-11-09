@@ -7,7 +7,7 @@ import (
 	"go-clean-arch/models"
 	"go-clean-arch/repositories"
 
-	"gorm.io/gorm"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type userUsecase struct {
@@ -23,7 +23,7 @@ func (u *userUsecase) RegisterUser(data *models.CreateUserDto) (int, error) {
 	password := data.Password
 
 	user, err := u.userRepo.GetUserByUsername(username)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		return constants.StatusInternalServerError, err
 	}
 	if user != nil {

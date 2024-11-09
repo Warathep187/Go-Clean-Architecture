@@ -8,6 +8,6 @@ import (
 
 func main() {
 	conf := config.GetConfig()
-	db := database.NewPostgresDatabase(conf)
-	server.NewFiberServer(conf, db).Start()
+	database.InitMongoDBConnection(conf)
+	server.NewFiberServer(conf).Start()
 }

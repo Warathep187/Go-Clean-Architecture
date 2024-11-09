@@ -1,45 +1,49 @@
 package repositories
 
 import (
-	"go-clean-arch/database"
+	"context"
 	"go-clean-arch/entities"
+	"go-clean-arch/utils"
+
+	"github.com/kamva/mgm/v3"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-type userRepository struct {
-	db database.Database
-}
+type userRepository struct{}
 
-func NewUserRepository(db database.Database) UserRepository {
-	return &userRepository{db: db}
+func NewUserRepository() UserRepository {
+	return &userRepository{}
 }
 
 func (r *userRepository) CreateUser(in *entities.CreateUserData) error {
-	userData := &entities.User{
-		Username: in.Username,
-		Password: in.Password,
+	document := bson.D{
+		{Key: "_id", Value: utils.GenerateRandomID()},
+		{Key: "username", Value: in.Username},
+		{Key: "password", Value: in.Password},
 	}
-
-	result := r.db.GetDb().Create(userData)
-
-	if result.Error != nil {
-		return result.Error
+	if _, err := mgm.Coll(&entities.User{}).InsertOne(context.Background(), &document); err != nil {
+		return err
 	}
 
 	return nil
 }
 
 func (r *userRepository) GetUserByID(id uint) (*entities.User, error) {
-	var user *entities.User
-	result := r.db.GetDb().First(&user, id)
+	user := &entities.User{}
 
-	return user, result.Error
+	if err := mgm.Coll(&entities.User{}).FindByID(id, user); err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func (r *userRepository) GetUserByUsername(username string) (*entities.User, error) {
-	var user *entities.User
-	result := r.db.GetDb().Where("username = ?", username).First(&user)
-	if result.Error != nil {
-		return nil, result.Error
+	user := &entities.User{}
+
+	query := bson.M{"username": username}
+	if err := mgm.Coll(&entities.User{}).First(query, user); err != nil {
+		return nil, err
 	}
 
 	return user, nil
