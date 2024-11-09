@@ -2,11 +2,13 @@ package repositories
 
 import (
 	"context"
+	"errors"
 	"go-clean-arch/entities"
 	"go-clean-arch/utils"
 
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type userRepository struct{}
@@ -32,6 +34,9 @@ func (r *userRepository) GetUserByID(id uint) (*entities.User, error) {
 	user := &entities.User{}
 
 	if err := mgm.Coll(&entities.User{}).FindByID(id, user); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -43,6 +48,9 @@ func (r *userRepository) GetUserByUsername(username string) (*entities.User, err
 
 	query := bson.M{"username": username}
 	if err := mgm.Coll(&entities.User{}).First(query, user); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
 		return nil, err
 	}
 

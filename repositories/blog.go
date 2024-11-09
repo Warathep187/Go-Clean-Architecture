@@ -38,6 +38,9 @@ func (r *blogRepository) GetBlogs() ([]*entities.Blog, error) {
 	if err := cursor.All(context.Background(), &blogs); err != nil {
 		return nil, err
 	}
+	if blogs == nil {
+		return []*entities.Blog{}, nil
+	}
 
 	return blogs, nil
 }
