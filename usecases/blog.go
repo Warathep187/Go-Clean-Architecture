@@ -27,12 +27,15 @@ func (u *blogUsecase) CreateBlog(data *models.CreateBlogDTO) (int, error) {
 	title := data.Title
 	content := data.Content
 
-	_, err := u.userRepo.GetUserByID(userID)
+	user, err := u.userRepo.GetUserByID(userID)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return constants.StatusNotFound, errors.New("User not found. Cannot create blog.")
 		}
 		return constants.StatusInternalServerError, err
+	}
+	if user == nil {
+		return constants.StatusNotFound, errors.New("User not found. Cannot create blog.")
 	}
 
 	if err = u.blogRepo.CreateBlog(&entities.CreateBlogData{
