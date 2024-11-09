@@ -12,7 +12,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/magiconair/properties/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -22,15 +22,16 @@ func TestRegisterUserFailedBadRequest(t *testing.T) {
 
 	userController := controllers.NewUserController(userUsecaseMock)
 
-	app := fiber.New()
-	app.Post("/register", userController.RegisterUser)
+	app := gin.New()
+	app.POST("/register", userController.RegisterUser)
 
 	requestBody := []byte(`invalid_json`)
 	req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewReader(requestBody))
 	req.Header.Set("Content-Type", "application/json")
-	res, _ := app.Test(req)
+	res := httptest.NewRecorder()
+	app.ServeHTTP(res, req)
 
-	assert.Equal(t, res.StatusCode, constants.StatusBadRequest, "Status should be 400")
+	assert.Equal(t, res.Code, constants.StatusBadRequest, "Status should be 400")
 }
 
 func TestRegisterUserFailedInternalServerError(t *testing.T) {
@@ -39,8 +40,8 @@ func TestRegisterUserFailedInternalServerError(t *testing.T) {
 
 	userController := controllers.NewUserController(userUsecaseMock)
 
-	app := fiber.New()
-	app.Post("/register", userController.RegisterUser)
+	app := gin.New()
+	app.POST("/register", userController.RegisterUser)
 
 	requestBody, _ := json.Marshal(&models.CreateUserDto{
 		Username: "test",
@@ -48,9 +49,10 @@ func TestRegisterUserFailedInternalServerError(t *testing.T) {
 	})
 	req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewReader(requestBody))
 	req.Header.Set("Content-Type", "application/json")
-	res, _ := app.Test(req)
+	res := httptest.NewRecorder()
+	app.ServeHTTP(res, req)
 
-	assert.Equal(t, res.StatusCode, constants.StatusInternalServerError, "Status should be 500")
+	assert.Equal(t, res.Code, constants.StatusInternalServerError, "Status should be 500")
 
 	userUsecaseMock.AssertExpectations(t)
 }
@@ -61,8 +63,8 @@ func TestRegisterUserSuccess(t *testing.T) {
 
 	userController := controllers.NewUserController(userUsecaseMock)
 
-	app := fiber.New()
-	app.Post("/register", userController.RegisterUser)
+	app := gin.New()
+	app.POST("/register", userController.RegisterUser)
 
 	requestBody, _ := json.Marshal(&models.CreateUserDto{
 		Username: "test",
@@ -70,7 +72,8 @@ func TestRegisterUserSuccess(t *testing.T) {
 	})
 	req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewReader(requestBody))
 	req.Header.Set("Content-Type", "application/json")
-	res, _ := app.Test(req)
+	res := httptest.NewRecorder()
+	app.ServeHTTP(res, req)
 
-	assert.Equal(t, res.StatusCode, constants.StatusOK, "Status should be 200")
+	assert.Equal(t, res.Code, constants.StatusOK, "Status should be 200")
 }

@@ -1,24 +1,31 @@
 package middlewares
 
 import (
+	"go-clean-arch/constants"
 	"go-clean-arch/models"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/gofiber/fiber/v2"
 )
 
-func ValidateBlogData(c *fiber.Ctx) error {
+func ValidateBlogData(c *gin.Context) {
 	var blogData *models.CreateBlogDTO
-	err := c.BodyParser(&blogData)
+	err := c.BindJSON(&blogData)
+
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+		c.JSON(constants.StatusBadRequest, gin.H{"message": err.Error()})
+		c.Abort()
+		return
 	}
 
 	validate := validator.New()
 	err = validate.Struct(blogData)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+		c.JSON(constants.StatusBadRequest, gin.H{"message": err.Error()})
+		c.Abort()
+		return
 	}
 
-	return c.Next()
+	c.Set("blogData", blogData)
+	c.Next()
 }

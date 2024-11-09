@@ -3,34 +3,34 @@ package server
 import (
 	"fmt"
 	"go-clean-arch/config"
+	"go-clean-arch/constants"
 	"go-clean-arch/interfaces/controllers"
 	"go-clean-arch/interfaces/middlewares"
 	"go-clean-arch/repositories"
 	"go-clean-arch/usecases"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gin-gonic/gin"
 )
 
-type fiberServer struct {
-	app  *fiber.App
+type ginServer struct {
+	app  *gin.Engine
 	conf *config.Config
 }
 
-func NewFiberServer(conf *config.Config) Server {
-	app := fiber.New()
+func NewGinServer(conf *config.Config) Server {
+	app := gin.Default()
 
-	return &fiberServer{
+	return &ginServer{
 		app:  app,
 		conf: conf,
 	}
 }
 
-func (s *fiberServer) Start() {
-	s.app.Use(recover.New())
+func (s *ginServer) Start() {
+	s.app.Use(gin.Recovery())
 
-	s.app.Get("/readyz", func(c *fiber.Ctx) error {
-		return c.SendString("OK")
+	s.app.GET("/readyz", func(c *gin.Context) {
+		c.String(constants.StatusOK, "OK")
 	})
 
 	blogRepo := repositories.NewBlogRepository()
@@ -42,15 +42,14 @@ func (s *fiberServer) Start() {
 	blogController := controllers.NewBlogController(blogUsecase)
 	userController := controllers.NewUserController(userUsecase)
 
-	// blog routes
+	// blogs
 	blogRouteGroup := s.app.Group("/blogs")
-	blogRouteGroup.Post("", middlewares.ValidateBlogData, blogController.CreateNewBlog)
-	blogRouteGroup.Get("", blogController.GetAllBlogs)
+	blogRouteGroup.POST("", middlewares.ValidateBlogData, blogController.CreateNewBlog)
+	blogRouteGroup.GET("", blogController.GetAllBlogs)
 
-	// user routes
+	// users
 	userRouteGroup := s.app.Group("/users")
-	userRouteGroup.Post("/register", userController.RegisterUser)
+	userRouteGroup.POST("/register", userController.RegisterUser)
 
-	serverUrl := fmt.Sprintf(":%d", s.conf.Server.Port)
-	s.app.Listen(serverUrl)
+	s.app.Run(fmt.Sprintf(":%d", s.conf.Server.Port))
 }

@@ -9,5 +9,5 @@ import (
 func main() {
 	conf := config.GetConfig()
 	database.InitMongoDBConnection(conf)
-	server.NewFiberServer(conf).Start()
+	server.NewGinServer(conf).Start()
 }

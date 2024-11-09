@@ -1,11 +1,10 @@
 package controllers
 
 import (
-	"go-clean-arch/constants"
 	"go-clean-arch/models"
 	"go-clean-arch/usecases"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
 type blogController struct {
@@ -18,27 +17,23 @@ func NewBlogController(blogUsecase usecases.BlogUsecase) BlogController {
 	}
 }
 
-func (ctr *blogController) CreateNewBlog(c *fiber.Ctx) error {
-	var blogData *models.CreateBlogDTO
-	err := c.BodyParser(&blogData)
-	if err != nil {
-		return c.Status(constants.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
-	}
+func (ctr *blogController) CreateNewBlog(c *gin.Context) {
+	blogData := c.MustGet("blogData").(*models.CreateBlogDTO)
 
 	httpStatus, err := ctr.blogUsecase.CreateBlog(blogData)
 	if err != nil {
-		return c.Status(httpStatus).JSON(fiber.Map{"message": err.Error()})
+		c.JSON(httpStatus, gin.H{"message": err.Error()})
+		return
 	}
 
-	return c.Status(httpStatus).JSON(fiber.Map{
-		"message": "Blog created successfully",
-	})
+	c.JSON(httpStatus, gin.H{"message": "Blog created successfully"})
 }
 
-func (ctr *blogController) GetAllBlogs(c *fiber.Ctx) error {
+func (ctr *blogController) GetAllBlogs(c *gin.Context) {
 	blogs, httpStatus, err := ctr.blogUsecase.GetAllBlogs()
 	if err != nil {
-		return c.Status(httpStatus).JSON(fiber.Map{"message": err.Error()})
+		c.JSON(httpStatus, gin.H{"message": err.Error()})
+		return
 	}
-	return c.Status(httpStatus).JSON(blogs)
+	c.JSON(httpStatus, blogs)
 }

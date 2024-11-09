@@ -1,12 +1,14 @@
 package controllers
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 type BlogController interface {
-	CreateNewBlog(c *fiber.Ctx) error
-	GetAllBlogs(c *fiber.Ctx) error
+	CreateNewBlog(c *gin.Context)
+	GetAllBlogs(c *gin.Context)
 }
 
 type UserController interface {
-	RegisterUser(c *fiber.Ctx) error
+	RegisterUser(c *gin.Context)
 }

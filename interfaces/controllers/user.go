@@ -1,10 +1,11 @@
 package controllers
 
 import (
+	"go-clean-arch/constants"
 	"go-clean-arch/models"
 	"go-clean-arch/usecases"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
 type userController struct {
@@ -15,17 +16,19 @@ func NewUserController(userUsecase usecases.UserUsecase) UserController {
 	return &userController{userUsecase: userUsecase}
 }
 
-func (ctr *userController) RegisterUser(c *fiber.Ctx) error {
+func (ctr *userController) RegisterUser(c *gin.Context) {
 	var userData *models.CreateUserDto
-	err := c.BodyParser(&userData)
+	err := c.BindJSON(&userData)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+		c.JSON(constants.StatusBadRequest, gin.H{"message": err.Error()})
+		return
 	}
 
 	httpStatus, err := ctr.userUsecase.RegisterUser(userData)
 	if err != nil {
-		return c.Status(httpStatus).JSON(fiber.Map{"message": err.Error()})
+		c.JSON(httpStatus, gin.H{"message": err.Error()})
+		return
 	}
 
-	return c.Status(httpStatus).JSON(fiber.Map{"message": "User registered successfully"})
+	c.JSON(httpStatus, gin.H{"message": "User registered successfully"})
 }

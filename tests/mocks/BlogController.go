@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	fiber "github.com/gofiber/fiber/v2"
+	gin "github.com/gin-gonic/gin"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -13,39 +13,13 @@ type BlogController struct {
 }
 
 // CreateNewBlog provides a mock function with given fields: c
-func (_m *BlogController) CreateNewBlog(c *fiber.Ctx) error {
-	ret := _m.Called(c)
-
-	if len(ret) == 0 {
-		panic("no return value specified for CreateNewBlog")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*fiber.Ctx) error); ok {
-		r0 = rf(c)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
+func (_m *BlogController) CreateNewBlog(c *gin.Context) {
+	_m.Called(c)
 }
 
 // GetAllBlogs provides a mock function with given fields: c
-func (_m *BlogController) GetAllBlogs(c *fiber.Ctx) error {
-	ret := _m.Called(c)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetAllBlogs")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*fiber.Ctx) error); ok {
-		r0 = rf(c)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
+func (_m *BlogController) GetAllBlogs(c *gin.Context) {
+	_m.Called(c)
 }
 
 // NewBlogController creates a new instance of BlogController. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
