@@ -11,7 +11,7 @@ start-postgres:
 		postgres:alpine
 
 stop-postgres:
-	docker stop gocleanarch-postgres
+	docker stop gocleanarch-postgres && docker rm gocleanarch-postgres
 
 start-mongo:
 	docker run -d \
@@ -19,7 +19,8 @@ start-mongo:
 		--name gocleanarch-mongo \
 		-e MONGO_INITDB_ROOT_USERNAME=homestead \
 		-e MONGO_INITDB_ROOT_PASSWORD=secret \
+		-e MONGO_INITDB_DATABASE=clean_arch_blogs \
 		mongo:8.0.3
 
 stop-mongo:
-	docker stop gocleanarch-mongo
+	docker stop gocleanarch-mongo && docker rm gocleanarch-mongo

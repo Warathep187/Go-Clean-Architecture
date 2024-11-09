@@ -1,8 +1,11 @@
 package repositories
 
 import (
+	"errors"
 	"go-clean-arch/database"
 	"go-clean-arch/entities"
+
+	"gorm.io/gorm"
 )
 
 type userRepository struct {
@@ -32,13 +35,23 @@ func (r *userRepository) GetUserByID(id uint) (*entities.User, error) {
 	var user *entities.User
 	result := r.db.GetDb().First(&user, id)
 
-	return user, result.Error
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, result.Error
+	}
+
+	return user, nil
 }
 
 func (r *userRepository) GetUserByUsername(username string) (*entities.User, error) {
 	var user *entities.User
 	result := r.db.GetDb().Where("username = ?", username).First(&user)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, result.Error
 	}
 

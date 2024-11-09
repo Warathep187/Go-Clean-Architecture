@@ -11,13 +11,12 @@ import (
 
 	"github.com/magiconair/properties/assert"
 	"github.com/stretchr/testify/mock"
-	"gorm.io/gorm"
 )
 
 func TestCreateBlogFailedUserNotFound(t *testing.T) {
 	blogRepositoryMock := new(mocks.BlogRepository)
 	userRepositoryMock := new(mocks.UserRepository)
-	userRepositoryMock.On("GetUserByID", mock.Anything).Return(nil, gorm.ErrRecordNotFound)
+	userRepositoryMock.On("GetUserByID", mock.Anything).Return(nil, nil)
 
 	blogUsecase := usecases.NewBlogUsecase(
 		blogRepositoryMock,
