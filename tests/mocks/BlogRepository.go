@@ -31,6 +31,24 @@ func (_m *BlogRepository) CreateBlog(dto *entities.CreateBlogData) error {
 	return r0
 }
 
+// DeleteBlogs provides a mock function with given fields:
+func (_m *BlogRepository) DeleteBlogs() error {
+	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteBlogs")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func() error); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetBlogs provides a mock function with given fields:
 func (_m *BlogRepository) GetBlogs() ([]*entities.Blog, error) {
 	ret := _m.Called()

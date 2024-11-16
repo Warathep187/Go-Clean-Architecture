@@ -56,3 +56,27 @@ func (r *userRepository) GetUserByUsername(username string) (*entities.User, err
 
 	return user, nil
 }
+
+// FOR TESTING
+func (r *userRepository) CreateUserWithID(id uint, dto *entities.CreateUserData) error {
+	userData := &entities.User{
+		ID:       int(id),
+		Username: dto.Username,
+		Password: dto.Password,
+	}
+	if _, err := mgm.Coll(&entities.User{}).InsertOne(context.Background(), userData); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// FOR TESTING
+func (r *userRepository) DeleteUsers() error {
+	_, err := mgm.Coll(&entities.User{}).DeleteMany(context.Background(), bson.M{})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
