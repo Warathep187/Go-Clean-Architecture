@@ -57,3 +57,29 @@ func (r *userRepository) GetUserByUsername(username string) (*entities.User, err
 
 	return user, nil
 }
+
+// FOR TESTING
+func (r *userRepository) CreateUserWithID(id uint, dto *entities.CreateUserData) error {
+	userData := &entities.User{
+		ID:       id,
+		Username: dto.Username,
+		Password: dto.Password,
+	}
+	result := r.db.GetDb().Create(userData)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+// FOR TESTING
+func (r *userRepository) DeleteUsers() error {
+	result := r.db.GetDb().Exec("DELETE FROM users")
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

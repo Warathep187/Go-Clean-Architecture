@@ -39,3 +39,14 @@ func (r *blogRepository) GetBlogs() ([]*entities.Blog, error) {
 
 	return blogs, nil
 }
+
+// FOR TESTING
+func (r *blogRepository) DeleteBlogs() error {
+	result := r.db.GetDb().Exec("DELETE FROM blogs")
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
