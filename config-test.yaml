@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+db:
+  host: localhost
+  port: 27017
+  user: homestead
+  password: secret
+  dbname: clean_arch_blogs

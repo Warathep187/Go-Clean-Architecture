@@ -44,3 +44,13 @@ func (r *blogRepository) GetBlogs() ([]*entities.Blog, error) {
 
 	return blogs, nil
 }
+
+// FOR TESTING
+func (r *blogRepository) DeleteBlogs() error {
+	_, err := mgm.Coll(&entities.Blog{}).DeleteMany(context.Background(), bson.M{})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
