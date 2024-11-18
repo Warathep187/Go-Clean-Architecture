@@ -6,7 +6,7 @@ import (
 	"go-clean-arch/constants"
 	"go-clean-arch/interfaces/controllers"
 	"go-clean-arch/interfaces/middlewares"
-	"go-clean-arch/repositories"
+	databaseRepository "go-clean-arch/repositories/database"
 	"go-clean-arch/usecases"
 
 	"github.com/gin-gonic/gin"
@@ -33,8 +33,8 @@ func (s *ginServer) Start() {
 		c.String(constants.StatusOK, "OK")
 	})
 
-	blogRepo := repositories.NewBlogRepository()
-	userRepo := repositories.NewUserRepository()
+	blogRepo := databaseRepository.NewBlogRepository()
+	userRepo := databaseRepository.NewUserRepository()
 
 	blogUsecase := usecases.NewBlogUsecase(blogRepo, userRepo)
 	userUsecase := usecases.NewUserUsecase(userRepo)
