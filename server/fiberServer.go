@@ -5,7 +5,7 @@ import (
 	"go-clean-arch/config"
 	"go-clean-arch/interfaces/controllers"
 	"go-clean-arch/interfaces/middlewares"
-	"go-clean-arch/repositories"
+	databaseRepository "go-clean-arch/repositories/database"
 	"go-clean-arch/usecases"
 
 	"github.com/gofiber/fiber/v2"
@@ -33,8 +33,8 @@ func (s *fiberServer) Start() {
 		return c.SendString("OK")
 	})
 
-	blogRepo := repositories.NewBlogRepository()
-	userRepo := repositories.NewUserRepository()
+	blogRepo := databaseRepository.NewBlogRepository()
+	userRepo := databaseRepository.NewUserRepository()
 
 	blogUsecase := usecases.NewBlogUsecase(blogRepo, userRepo)
 	userUsecase := usecases.NewUserUsecase(userRepo)
