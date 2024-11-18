@@ -5,15 +5,15 @@ import (
 	"go-clean-arch/constants"
 	"go-clean-arch/entities"
 	"go-clean-arch/models"
-	"go-clean-arch/repositories"
+	databaseRepository "go-clean-arch/repositories/database"
 )
 
 type blogUsecase struct {
-	blogRepo repositories.BlogRepository
-	userRepo repositories.UserRepository
+	blogRepo databaseRepository.BlogRepository
+	userRepo databaseRepository.UserRepository
 }
 
-func NewBlogUsecase(blogRepo repositories.BlogRepository, userRepo repositories.UserRepository) BlogUsecase {
+func NewBlogUsecase(blogRepo databaseRepository.BlogRepository, userRepo databaseRepository.UserRepository) BlogUsecase {
 	return &blogUsecase{
 		blogRepo: blogRepo,
 		userRepo: userRepo,

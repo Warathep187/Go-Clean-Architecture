@@ -5,14 +5,14 @@ import (
 	"go-clean-arch/constants"
 	"go-clean-arch/entities"
 	"go-clean-arch/models"
-	"go-clean-arch/repositories"
+	databaseRepository "go-clean-arch/repositories/database"
 )
 
 type userUsecase struct {
-	userRepo repositories.UserRepository
+	userRepo databaseRepository.UserRepository
 }
 
-func NewUserUsecase(userRepo repositories.UserRepository) UserUsecase {
+func NewUserUsecase(userRepo databaseRepository.UserRepository) UserUsecase {
 	return &userUsecase{userRepo: userRepo}
 }
 

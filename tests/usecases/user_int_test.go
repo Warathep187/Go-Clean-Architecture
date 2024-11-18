@@ -5,7 +5,7 @@ import (
 	"go-clean-arch/database"
 	"go-clean-arch/entities"
 	"go-clean-arch/models"
-	"go-clean-arch/repositories"
+	databaseRepository "go-clean-arch/repositories/database"
 	test_setup "go-clean-arch/tests"
 	"go-clean-arch/usecases"
 	"testing"
@@ -16,7 +16,7 @@ import (
 
 type RegisterUserUsecaseTestSuite struct {
 	suite.Suite
-	userRepo    repositories.UserRepository
+	userRepo    databaseRepository.UserRepository
 	userUsecase usecases.UserUsecase
 }
 
@@ -27,7 +27,7 @@ func TestRegisterUserUsecaseTestSuite(t *testing.T) {
 func (suite *RegisterUserUsecaseTestSuite) SetupTest() {
 	configs := test_setup.GetTestConfigs()
 	db := database.NewPostgresDatabase(configs)
-	suite.userRepo = repositories.NewUserRepository(db)
+	suite.userRepo = databaseRepository.NewUserRepository(db)
 	suite.userUsecase = usecases.NewUserUsecase(suite.userRepo)
 }
 

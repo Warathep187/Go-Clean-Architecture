@@ -6,7 +6,7 @@ import (
 	"go-clean-arch/database"
 	"go-clean-arch/entities"
 	"go-clean-arch/models"
-	"go-clean-arch/repositories"
+	databaseRepository "go-clean-arch/repositories/database"
 	test_setup "go-clean-arch/tests"
 	"go-clean-arch/usecases"
 	"testing"
@@ -18,8 +18,8 @@ import (
 // CREATE BLOG
 type CreateBlogUsecaseTestSuite struct {
 	suite.Suite
-	blogRepo    repositories.BlogRepository
-	userRepo    repositories.UserRepository
+	blogRepo    databaseRepository.BlogRepository
+	userRepo    databaseRepository.UserRepository
 	blogUsecase usecases.BlogUsecase
 }
 
@@ -30,8 +30,8 @@ func TestCreateBlogTestSuite(t *testing.T) {
 func (suite *CreateBlogUsecaseTestSuite) SetupTest() {
 	configs := test_setup.GetTestConfigs()
 	db := database.NewPostgresDatabase(configs)
-	suite.blogRepo = repositories.NewBlogRepository(db)
-	suite.userRepo = repositories.NewUserRepository(db)
+	suite.blogRepo = databaseRepository.NewBlogRepository(db)
+	suite.userRepo = databaseRepository.NewUserRepository(db)
 	suite.blogUsecase = usecases.NewBlogUsecase(suite.blogRepo, suite.userRepo)
 }
 
@@ -72,7 +72,7 @@ func (suite *CreateBlogUsecaseTestSuite) TestCreateBlogSuccess() {
 // GET ALL BLOGS
 type GetAllBlogsUsecaseTestSuite struct {
 	suite.Suite
-	blogRepo    repositories.BlogRepository
+	blogRepo    databaseRepository.BlogRepository
 	blogUsecase usecases.BlogUsecase
 }
 
@@ -83,7 +83,7 @@ func TestGetAllBlogsTestSuite(t *testing.T) {
 func (suite *GetAllBlogsUsecaseTestSuite) SetupTest() {
 	configs := test_setup.GetTestConfigs()
 	db := database.NewPostgresDatabase(configs)
-	suite.blogRepo = repositories.NewBlogRepository(db)
+	suite.blogRepo = databaseRepository.NewBlogRepository(db)
 	suite.blogUsecase = usecases.NewBlogUsecase(suite.blogRepo, nil)
 }
 
